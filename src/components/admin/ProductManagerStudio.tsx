@@ -302,9 +302,9 @@ export function ProductManagerStudio({
               onChange={(e) => setSelectedBranchFilter(e.target.value)}
               className="px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-cyan-400"
             >
-              <option value="all">كافة الفروع (الجيش + سعد زغلول)</option>
-              <option value="branch-1">فرع شارع الجيش (الرئيسي)</option>
-              <option value="branch-2">فرع شارع سعد زغلول</option>
+              <option value="all">كافة الفروع (شارع الجيش: الوحدة الزراعية + جامع الشحري)</option>
+              <option value="branch-1">فرع شارع الجيش (بجوار الوحدة الزراعية)</option>
+              <option value="branch-2">فرع شارع الجيش (أمام جامع الشحري)</option>
             </select>
           </div>
         </div>
@@ -413,9 +413,9 @@ export function ProductManagerStudio({
                     {(!product.branchIds || product.branchIds.length === 2) ? (
                       <span className="text-blue-300">الفرعين معاً</span>
                     ) : product.branchIds.includes("branch-1") ? (
-                      <span className="text-cyan-300">شارع الجيش</span>
+                      <span className="text-cyan-300">الوحدة الزراعية</span>
                     ) : (
-                      <span className="text-amber-300">سعد زغلول</span>
+                      <span className="text-amber-300">جامع الشحري</span>
                     )}
                   </div>
                 </div>
@@ -672,7 +672,7 @@ export function ProductManagerStudio({
                       }}
                       className="rounded accent-cyan-500 w-4 h-4"
                     />
-                    <span>فرع شارع سعد زغلول</span>
+                    <span>فرع شارع الجيش (أمام جامع الشحري)</span>
                   </label>
                 </div>
               </div>

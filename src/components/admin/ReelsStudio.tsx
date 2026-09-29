@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { ReelsVideoConfig, ReelScene } from "@/types/boraey";
 import { INITIAL_REELS_CONFIG } from "@/data/boraeyMockData";
+import { downloadElementAsImage } from "@/lib/imageDownloader";
 
 interface ReelsStudioProps {
   onBackToFlyer?: () => void;
@@ -49,8 +50,9 @@ export function ReelsStudio({ onBackToFlyer }: ReelsStudioProps) {
     return () => clearInterval(timer);
   }, [isPlaying, scenes.length]);
 
-  const handleExportVideo = () => {
+  const handleExportVideo = async () => {
     setExportSuccess(true);
+    await downloadElementAsImage("reel-mobile-screen", `elboraey-reel-scene-${currentSceneIndex + 1}.png`);
     setTimeout(() => setExportSuccess(false), 3500);
   };
 
@@ -102,7 +104,7 @@ export function ReelsStudio({ onBackToFlyer }: ReelsStudioProps) {
         
         {/* Right Column (5 Cols): The 9:16 Smartphone Reels Player */}
         <div className="lg:col-span-5 flex justify-center">
-          <div className="relative w-full max-w-[340px] aspect-[9/16] rounded-[40px] border-4 border-slate-700 bg-black p-3 shadow-2xl overflow-hidden flex flex-col justify-between">
+          <div id="reel-mobile-screen" className="relative w-full max-w-[340px] aspect-[9/16] rounded-[40px] border-4 border-slate-700 bg-black p-3 shadow-2xl overflow-hidden flex flex-col justify-between">
             
             {/* Top Notch & Stories Progress Bar */}
             <div className="relative z-30 pt-2 px-2 space-y-2">
@@ -128,7 +130,7 @@ export function ReelsStudio({ onBackToFlyer }: ReelsStudioProps) {
                   <div>
                     <div className="flex items-center gap-1">
                       <span className="text-xs font-black text-white drop-shadow">هايبر ماركت البرعي</span>
-                      <span className="w-3 h-3 rounded-full bg-blue-500 text-white text-[8px] flex items-center justify-center font-bold">✓</span>
+                      <span className="w-3.5 h-3.5 rounded-full bg-blue-500 text-white text-[8px] flex items-center justify-center font-bold">✓</span>
                     </div>
                     <span className="text-[10px] text-slate-200 opacity-90 drop-shadow block">عروض جملة الجملة ⚡</span>
                   </div>
@@ -146,38 +148,51 @@ export function ReelsStudio({ onBackToFlyer }: ReelsStudioProps) {
             {/* Middle Active Scene Animation Canvas */}
             <div className={`absolute inset-0 bg-gradient-to-b ${currentScene.bgGradient} flex flex-col items-center justify-center p-6 text-center z-10 transition-all duration-700`}>
               {/* Animated Floating Badge */}
-              <div className="mb-4">
+              <div className="mb-2">
                 <span className="px-3 py-1 rounded-full bg-black/50 backdrop-blur-md text-amber-300 border border-amber-300/40 text-xs font-black shadow-lg">
                   {currentScene.badge}
                 </span>
               </div>
 
-              {/* Large Emoji / Icon Asset */}
-              <div className="text-6xl my-2 animate-bounce drop-shadow-xl">
-                {currentScene.icon}
-              </div>
+              {/* Cartoon Mascot Image or Large Emoji Asset */}
+              {currentScene.mascotImage ? (
+                <div className="relative w-24 h-24 my-1 rounded-2xl overflow-hidden shadow-2xl border-2 border-white/50 animate-bounce">
+                  <Image src={currentScene.mascotImage} alt={currentScene.productName} fill className="object-cover" />
+                </div>
+              ) : (
+                <div className="text-5xl my-2 animate-bounce drop-shadow-xl">
+                  {currentScene.icon}
+                </div>
+              )}
+
+              {/* Mascot Comic Speech Bubble */}
+              {currentScene.mascotQuote && (
+                <div className="my-1 px-3 py-1 rounded-xl bg-amber-400/20 backdrop-blur-md border border-amber-300/40 text-[10px] font-black text-amber-200 shadow-md max-w-[240px]">
+                  {currentScene.mascotQuote}
+                </div>
+              )}
 
               {/* Product Headline */}
-              <h3 className="text-xl font-black text-white drop-shadow-md leading-tight mt-2 px-2">
+              <h3 className="text-lg font-black text-white drop-shadow-md leading-tight mt-1 px-2">
                 {currentScene.productName}
               </h3>
 
               {/* Pricing explosion */}
-              <div className="mt-4 p-4 rounded-3xl bg-black/60 backdrop-blur-md border border-white/20 shadow-2xl space-y-1">
-                <span className="text-xs text-slate-400 line-through block">
+              <div className="mt-2 p-3 rounded-2xl bg-black/60 backdrop-blur-md border border-white/20 shadow-2xl space-y-0.5 w-full max-w-[200px]">
+                <span className="text-[11px] text-slate-400 line-through block">
                   بدل {currentScene.originalPrice} جنيه
                 </span>
-                <div className="text-3xl font-black text-amber-300 font-mono tracking-tight">
-                  {currentScene.offerPrice} <span className="text-base font-bold">ج.م</span>
+                <div className="text-2xl font-black text-amber-300 font-mono tracking-tight">
+                  {currentScene.offerPrice} <span className="text-sm font-bold">ج.م</span>
                 </div>
-                <div className="text-xs font-black text-emerald-400 pt-1 border-t border-white/10">
+                <div className="text-[10px] font-black text-emerald-400 pt-0.5 border-t border-white/10">
                   {currentScene.savingText}
                 </div>
               </div>
 
               {/* Slogan */}
-              <p className="text-[11px] font-bold text-white/90 drop-shadow mt-4">
-                الأسعار قطاعي بسعر جملة الجملة 💙💙
+              <p className="text-[10px] font-bold text-white/90 drop-shadow mt-2">
+                فرعا زفتى بشارع الجيش: الوحدة الزراعية & أمام جامع الشحري 🏬
               </p>
             </div>
 

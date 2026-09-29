@@ -21,6 +21,8 @@ export interface ProductItem {
   isHotOffer?: boolean;
   description?: string;
   branchIds?: string[]; // الفروع المتوفر بها المنتج
+  mascotImage?: string; // صورة الشخصية الكارتونية للمنتج المتكلم
+  mascotQuote?: string; // العبارة التي تنطق بها الشخصية
 }
 
 export type FlyerTheme = 'metallic' | 'dynamite' | 'fresh' | 'festive';
@@ -122,6 +124,8 @@ export interface ReelScene {
   bgGradient: string;
   icon: string;
   voiceoverLine: string;
+  mascotImage?: string;
+  mascotQuote?: string;
 }
 
 export interface ReelsVideoConfig {

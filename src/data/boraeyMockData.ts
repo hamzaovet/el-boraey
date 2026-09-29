@@ -13,6 +13,8 @@ export const INITIAL_PRODUCTS: ProductItem[] = [
     inStock: true,
     isHotOffer: true,
     description: "زيت ذرة نقي عالي الجودة للطهي والقلي الصحي - بسعر جملة الجملة حصرياً بالبرعي",
+    mascotImage: "/mascots/oil-bottle.jpg",
+    mascotQuote: "أنا زيت عافية.. نازل بـ 139 جنيه بس يا معلم سامح! 🌽",
   },
   {
     id: "prod-2",
@@ -26,6 +28,8 @@ export const INITIAL_PRODUCTS: ProductItem[] = [
     inStock: true,
     isHotOffer: true,
     description: "أرز مصري منقى ومغسول بأحدث التقنيات حبة عريضة ممتازة",
+    mascotImage: "/mascots/rice-sack.jpg",
+    mascotQuote: "أنا أرز الضحى البلدي.. جاي أفرح أهل زفتى بجملة الجملة! 🌾",
   },
   {
     id: "prod-3",
@@ -39,6 +43,8 @@ export const INITIAL_PRODUCTS: ProductItem[] = [
     inStock: true,
     isHotOffer: true,
     description: "سكر مصري أبيض نقي سريع الذوبان خالي من الشوائب",
+    mascotImage: "/mascots/sugar-pack.jpg",
+    mascotQuote: "سكر كريستال أبيض صافي.. بـ 32.5 جنيه يعني التوفير الصح! ⭐",
   },
   {
     id: "prod-4",
@@ -172,9 +178,9 @@ export const INITIAL_BRANCHES = [
   },
   {
     id: "branch-2",
-    name: "فرع شارع سعد زغلول",
-    address: "زفتى - شارع سعد زغلول - بجوار مكتبة ناهد",
-    landmark: "بجوار مكتبة ناهد",
+    name: "فرع شارع الجيش (أمام جامع الشحري)",
+    address: "زفتى - شارع الجيش - أمام جامع الشحري",
+    landmark: "أمام جامع الشحري",
     phone: "01098765432",
     whatsapp: "201098765432",
     workingHours: "8:00 ص - 2:00 فجراً",
@@ -187,7 +193,7 @@ export const INITIAL_DELIVERY_SETTINGS: DeliverySettings = {
   deliveryFee: 15,
   freeDeliveryThreshold: 400,
   estimatedTimeMinutes: 35,
-  pauseReasonNotice: "⚠️ خدمة التوصيل المنزلي متوقفة حالياً للتجهيزات وتحديث الأسطول — متاح الاستلام الفوري من فرعي زفتى (شارع الجيش أو شارع سعد زغلول).",
+  pauseReasonNotice: "⚠️ خدمة التوصيل المنزلي متوقفة حالياً للتجهيزات وتحديث الأسطول — متاح الاستلام الفوري من فرعي زفتى بشارع الجيش (بجوار الوحدة الزراعية أو أمام جامع الشحري).",
   branches: INITIAL_BRANCHES,
   defaultBranchId: "branch-1",
   contactPhone: "01023456789",
@@ -440,7 +446,7 @@ export const INITIAL_REELS_CONFIG: ReelsVideoConfig = {
   title: "ريلز إنستجرام وفيسبوك: قنابل عروض الأسبوع من البرعي",
   audioTrackTitle: "إيقاع حماسي شرقي سريع (Mahraganat Beat / Commercial Upbeat)",
   durationSeconds: 15,
-  scriptFullText: "يا صباح الفل يا أهل زفتى! المعلم سامح حط النقط ع الحروف وجابلك عروض البرعي الجديدة: زيت عافية بـ 139.. أرز الضحى 5ك بـ 168.. سكر بـ 32 ونص.. وبانيه كوكي بـ 189! عروض قطاعي بسعر جملة الجملة.. الحق قبل نفاد الكمية!",
+  scriptFullText: "يا صباح الفل يا أهل زفتى! المعلم سامح حط النقط ع الحروف وجابلك عروض البرعي الجديدة: كارتون المنتجات بيكلمكم بنفسه.. زيت عافية بـ 139.. أرز الضحى 5ك بـ 168.. سكر بـ 32 ونص.. وبانيه كوكي بـ 189! عروض قطاعي بسعر جملة الجملة بفروعنا بشارع الجيش.. الحق قبل نفاد الكمية!",
   scenes: [
     {
       id: 1,
@@ -452,6 +458,8 @@ export const INITIAL_REELS_CONFIG: ReelsVideoConfig = {
       bgGradient: "from-amber-500 via-orange-600 to-red-600",
       icon: "🛢️",
       voiceoverLine: "زيت عافية ذرة نقي 1.6 لتر بـ 139 جنيه بس بدل 175!",
+      mascotImage: "/mascots/oil-bottle.jpg",
+      mascotQuote: "أنا زيت عافية.. نازل بـ 139 جنيه بس يا معلم سامح! 🌽",
     },
     {
       id: 2,
@@ -463,6 +471,8 @@ export const INITIAL_REELS_CONFIG: ReelsVideoConfig = {
       bgGradient: "from-emerald-600 via-teal-600 to-cyan-700",
       icon: "🍚",
       voiceoverLine: "شيكارة أرز الضحى 5 كيلو بـ 168 جنيه بس بدل 210!",
+      mascotImage: "/mascots/rice-sack.jpg",
+      mascotQuote: "بلدي 100% وحبة عريضة وجملة الجملة! 🌾",
     },
     {
       id: 3,
@@ -474,6 +484,8 @@ export const INITIAL_REELS_CONFIG: ReelsVideoConfig = {
       bgGradient: "from-blue-600 via-indigo-600 to-violet-800",
       icon: "🍬",
       voiceoverLine: "سكر كريستال أبيض نقي بـ 32 جنيه ونصف بدل 42!",
+      mascotImage: "/mascots/sugar-pack.jpg",
+      mascotQuote: "أبيض وسكر وتوفير لبيتك 32.5 ج! ⭐",
     },
     {
       id: 4,
@@ -485,6 +497,8 @@ export const INITIAL_REELS_CONFIG: ReelsVideoConfig = {
       bgGradient: "from-rose-600 via-pink-600 to-amber-600",
       icon: "🍗",
       voiceoverLine: "بانيه كوكي كرانشي 1 كجم بـ 189 جنيه بدل 240.. مستني إيه؟!",
+      mascotImage: "/mascots/oil-bottle.jpg",
+      mascotQuote: "مقرمش وسوبر كرانشي بـ 189 ج! 🔥",
     },
   ],
 };

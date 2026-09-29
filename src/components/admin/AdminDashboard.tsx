@@ -293,6 +293,7 @@ export function AdminDashboard({
           }}
           onSendToFacebookStudio={() => setActiveTab('facebook')}
           onSendToReelsStudio={() => setActiveTab('reels')}
+          availableProducts={products}
         />
       )}
 

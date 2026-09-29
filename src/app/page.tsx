@@ -206,7 +206,7 @@ export default function BoraeyHomePage() {
             <span className="text-slate-600">|</span>
             <span className="text-cyan-400 font-bold">الأسعار قطاعي بسعر جملة الجملة 💙💙</span>
             <span className="text-slate-600">|</span>
-            <span>فرع شارع الجيش وفرع شارع سعد زغلول - زفتى</span>
+            <span>فرعا زفتى بشارع الجيش: بجوار الوحدة الزراعية & أمام جامع الشحري</span>
           </div>
 
           <div className="flex items-center gap-4 text-slate-500 text-[11px]">
