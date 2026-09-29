@@ -198,33 +198,62 @@ export default function BoraeyHomePage() {
         )}
       </main>
 
-      {/* Modern Hyper Boraey Footer */}
+      {/* Modern Hyper Boraey & Orca Credits Footer */}
       <footer className="mt-16 border-t border-slate-800/80 bg-slate-950 text-slate-400 text-xs py-8">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="text-white font-black text-sm">هايبر ماركت البرعي</span>
-            <span className="text-slate-600">|</span>
-            <span className="text-cyan-400 font-bold">الأسعار قطاعي بسعر جملة الجملة 💙💙</span>
-            <span className="text-slate-600">|</span>
-            <span>فرعا زفتى بشارع الجيش: بجوار الوحدة الزراعية & أمام جامع الشحري</span>
+        <div className="max-w-7xl mx-auto px-4 space-y-5">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="text-white font-black text-sm">هايبر ماركت البرعي</span>
+              <span className="text-slate-600">|</span>
+              <span className="text-cyan-400 font-bold">الأسعار قطاعي بسعر جملة الجملة 💙💙</span>
+              <span className="text-slate-600">|</span>
+              <span>فرعا زفتى بشارع الجيش: بجوار الوحدة الزراعية & أمام جامع الشحري</span>
+            </div>
+
+            <div className="flex items-center gap-4 text-slate-500 text-[11px]">
+              {isAdminAuthenticated ? (
+                <button
+                  onClick={handleAdminLogout}
+                  className="hover:text-rose-400 transition-colors cursor-pointer"
+                >
+                  قفل البوابة الإدارية 🔒
+                </button>
+              ) : (
+                <button
+                  onClick={handleOpenAdminLogin}
+                  className="hover:text-amber-400 transition-colors cursor-pointer"
+                >
+                  دخول إدارة المعلم سامح 👑
+                </button>
+              )}
+            </div>
           </div>
 
-          <div className="flex items-center gap-4 text-slate-500 text-[11px]">
-            {isAdminAuthenticated ? (
-              <button
-                onClick={handleAdminLogout}
-                className="hover:text-rose-400 transition-colors cursor-pointer"
+          {/* Orca Agency Signature & Phone */}
+          <div className="pt-4 border-t border-slate-800/60 flex flex-col md:flex-row items-center justify-between gap-3 text-[11px]">
+            <div className="flex items-center gap-2">
+              <span className="text-amber-400 font-bold">🐋 إعداد وتصميم وتنفيذ:</span>
+              <span className="text-white font-black">أوركا للحلول البرمجية والذكاء الاصطناعي (Orca One)</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-slate-400">لطلب وتطوير المتاجر والأنظمة الذكية:</span>
+              <a
+                href="tel:01018671000"
+                className="flex items-center gap-1 px-3 py-1 rounded-full bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold font-mono transition-colors"
+                dir="ltr"
               >
-                قفل البوابة الإدارية 🔒
-              </button>
-            ) : (
-              <button
-                onClick={handleOpenAdminLogin}
-                className="hover:text-amber-400 transition-colors cursor-pointer"
+                <span>📞 01018671000</span>
+              </a>
+              <a
+                href="https://wa.me/201018671000"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold transition-colors"
               >
-                دخول إدارة المعلم سامح 👑
-              </button>
-            )}
+                <span>واتساب 💬</span>
+              </a>
+            </div>
           </div>
         </div>
       </footer>

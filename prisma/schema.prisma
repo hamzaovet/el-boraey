@@ -5,8 +5,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./boraey.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Product {
@@ -21,6 +21,8 @@ model Product {
   inStock            Boolean     @default(true)
   isHotOffer         Boolean     @default(false)
   description        String?
+  mascotImage        String?
+  mascotQuote        String?
   createdAt          DateTime    @default(now())
   updatedAt          DateTime    @updatedAt
   orderItems         OrderItem[]

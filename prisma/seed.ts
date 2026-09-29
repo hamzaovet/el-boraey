@@ -23,6 +23,8 @@ async function main() {
         inStock: prod.inStock,
         isHotOffer: prod.isHotOffer || false,
         description: prod.description || null,
+        mascotImage: prod.mascotImage || null,
+        mascotQuote: prod.mascotQuote || null,
       },
     });
   }
