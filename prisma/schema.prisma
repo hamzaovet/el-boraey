@@ -1,0 +1,91 @@
+// Prisma schema for El Boraey Hypermarket Platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./boraey.db"
+}
+
+model Product {
+  id                 String      @id @default(cuid())
+  name               String
+  category           String
+  originalPrice      Float
+  offerPrice         Float
+  discountPercentage Int
+  unit               String
+  image              String
+  inStock            Boolean     @default(true)
+  isHotOffer         Boolean     @default(false)
+  description        String?
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  orderItems         OrderItem[]
+}
+
+model OfferFlyer {
+  id         String   @id @default(cuid())
+  title      String
+  subtitle   String
+  weekLabel  String
+  startDate  String
+  endDate    String
+  theme      String   @default("metallic")
+  footerNote String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model CustomerOrder {
+  id            String      @id @default(cuid())
+  orderNumber   String      @unique
+  customerName  String
+  customerPhone String
+  deliveryType  String      // "delivery" | "pickup"
+  address       String?
+  notes         String?
+  paymentMethod String      // "cash" | "instapay" | "vodafone_cash"
+  subtotal      Float
+  deliveryFee   Float       @default(0)
+  total         Float
+  status        String      @default("new") // "new" | "preparing" | "ready_for_pickup" | "out_for_delivery" | "completed" | "cancelled"
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  items         OrderItem[]
+}
+
+model OrderItem {
+  id        String        @id @default(cuid())
+  orderId   String
+  order     CustomerOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product       @relation(fields: [productId], references: [id])
+  quantity  Int           @default(1)
+  unitPrice Float
+  total     Float
+}
+
+model SocialPost {
+  id             String   @id @default(cuid())
+  platform       String   @default("facebook")
+  title          String
+  tone           String   // "energetic" | "friendly" | "weekend"
+  content        String
+  hashtags       String   // JSON string
+  suggestedImage String?
+  status         String   @default("ready") // "draft" | "ready" | "scheduled" | "published"
+  likes          Int      @default(0)
+  comments       Int      @default(0)
+  shares         Int      @default(0)
+  createdAt      DateTime @default(now())
+}
+
+model StoreSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
