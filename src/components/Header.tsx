@@ -12,9 +12,12 @@ import {
   Phone, 
   CheckCircle2, 
   AlertTriangle,
-  Crown
+  Crown,
+  Lock,
+  ChevronDown,
+  Building2
 } from "lucide-react";
-import { DeliverySettings, CartItem } from "@/types/boraey";
+import { DeliverySettings, CartItem, BranchInfo } from "@/types/boraey";
 
 interface HeaderProps {
   activeView: 'store' | 'flyer' | 'admin';
@@ -23,6 +26,10 @@ interface HeaderProps {
   cartItems: CartItem[];
   onOpenCart: () => void;
   onToggleDelivery: () => void;
+  selectedBranchId: string;
+  onSelectBranch: (branchId: string) => void;
+  isAdminAuthenticated: boolean;
+  onOpenAdminLogin: () => void;
 }
 
 export function Header({
@@ -32,33 +39,58 @@ export function Header({
   cartItems,
   onOpenCart,
   onToggleDelivery,
+  selectedBranchId,
+  onSelectBranch,
+  isAdminAuthenticated,
+  onOpenAdminLogin,
 }: HeaderProps) {
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   const cartTotal = cartItems.reduce((acc, item) => acc + (item.product.offerPrice * item.quantity), 0);
 
+  const activeBranch = deliverySettings.branches.find(b => b.id === selectedBranchId) || deliverySettings.branches[0];
+
   return (
     <header className="sticky top-0 z-40 bg-slate-950/95 backdrop-blur-md border-b border-slate-800 text-white shadow-xl">
       {/* Top micro announcement bar */}
-      <div className="bg-gradient-to-r from-blue-900 via-slate-900 to-indigo-950 border-b border-slate-800/80 px-4 py-1.5 text-xs text-slate-300">
+      <div className="bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 border-b border-slate-800/80 px-4 py-1.5 text-xs text-slate-300">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-          {/* Branch & Contact */}
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1.5 text-blue-300 font-medium">
-              <MapPin className="w-3.5 h-3.5 text-blue-400" />
-              <span>فرع زفتى: شارع الجيش - بجوار الوحدة الزراعية</span>
+          
+          {/* Branch Selector & Info */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 bg-slate-900/80 border border-slate-700/80 px-2.5 py-0.5 rounded-full text-[11px]">
+              <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <span className="text-slate-400">الفرع الحالي:</span>
+              <select
+                value={selectedBranchId}
+                onChange={(e) => onSelectBranch(e.target.value)}
+                className="bg-transparent text-cyan-300 font-bold focus:outline-hidden cursor-pointer"
+              >
+                {deliverySettings.branches.map((b) => (
+                  <option key={b.id} value={b.id} className="bg-slate-900 text-white">
+                    {b.name} {b.isMain ? "(الرئيسي)" : ""}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <span className="hidden md:inline text-slate-400 text-[11px]">
+              {activeBranch.address}
             </span>
-            <span className="hidden sm:inline-block text-slate-600">|</span>
+
+            <span className="hidden sm:inline-block text-slate-700">|</span>
+
             <a 
-              href={`tel:${deliverySettings.contactPhone}`} 
+              href={`tel:${activeBranch.phone}`} 
               className="hidden sm:flex items-center gap-1 text-slate-300 hover:text-white transition-colors"
             >
               <Phone className="w-3.5 h-3.5 text-emerald-400" />
-              <span>{deliverySettings.contactPhone}</span>
+              <span className="font-mono text-[11px]">{activeBranch.phone}</span>
             </a>
           </div>
 
-          {/* Delivery Status Indicator & Quick Admin Switch */}
+          {/* Delivery Indicator & Subtle Admin Login */}
           <div className="flex items-center gap-3">
+            {/* Delivery Status Indicator */}
             <div className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border transition-colors ${
               deliverySettings.isDeliveryEnabled 
                 ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/30" 
@@ -68,17 +100,30 @@ export function Header({
               <span>
                 {deliverySettings.isDeliveryEnabled 
                   ? "🚀 التوصيل للمنازل متاح (45 دقيقة)" 
-                  : "🏬 الاستلام متاح من الفرع (التوصيل مغلق)"}
+                  : "🏬 الاستلام متاح من الفرعين (الدليفري متوقف)"}
               </span>
             </div>
 
-            <button
-              onClick={onToggleDelivery}
-              title="تغيير حالة الدليفري السريعة"
-              className="text-[10px] text-slate-400 hover:text-cyan-300 underline underline-offset-2 transition-colors cursor-pointer hidden md:inline-block"
-            >
-              (تغيير الحالة)
-            </button>
+            {/* Admin Login / Gateway trigger (discreet lock) */}
+            {isAdminAuthenticated ? (
+              <button
+                onClick={() => onViewChange('admin')}
+                className="flex items-center gap-1 text-[11px] font-bold text-amber-300 hover:text-amber-200 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-lg transition-colors cursor-pointer"
+                title="لوحة تحكم المعلم سامح"
+              >
+                <Crown className="w-3 h-3 text-amber-400" />
+                <span>لوحة الإدارة</span>
+              </button>
+            ) : (
+              <button
+                onClick={onOpenAdminLogin}
+                className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-amber-300 transition-colors cursor-pointer px-2 py-0.5 rounded-lg border border-slate-800 hover:border-amber-500/40"
+                title="دخول إدارة الهايبر (خاص بالمعلم سامح)"
+              >
+                <Lock className="w-3 h-3 text-slate-500 hover:text-amber-400" />
+                <span>دخول الإدارة</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -106,7 +151,7 @@ export function Header({
                   هايبر ماركت البرعي
                 </span>
                 <span className="text-[10px] font-bold px-1.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-md">
-                  زفتى
+                  زفتى (فرعين)
                 </span>
               </div>
               <p className="text-[11px] font-medium text-cyan-400">
@@ -115,8 +160,8 @@ export function Header({
             </div>
           </div>
 
-          {/* Navigation Mode Switcher Tabs */}
-          <div className="hidden lg:flex items-center gap-1 bg-slate-900/90 p-1 rounded-2xl border border-slate-800 shadow-inner">
+          {/* Customer Navigation Mode Switcher Tabs */}
+          <div className="hidden md:flex items-center gap-1 bg-slate-900/90 p-1 rounded-2xl border border-slate-800 shadow-inner">
             <button
               onClick={() => onViewChange('store')}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
@@ -144,31 +189,25 @@ export function Header({
               </span>
             </button>
 
-            <button
-              onClick={() => onViewChange('admin')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                activeView === 'admin'
-                  ? "bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 text-white shadow-lg shadow-purple-500/20"
-                  : "text-amber-300 hover:text-amber-200 hover:bg-amber-950/40 border border-amber-500/20"
-              }`}
-            >
-              <Crown className="w-4 h-4 text-amber-300 animate-pulse" />
-              <span>بوابة المعلم سامح (AI Hub)</span>
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            </button>
+            {/* Only show Admin tab if admin is authenticated */}
+            {isAdminAuthenticated && (
+              <button
+                onClick={() => onViewChange('admin')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  activeView === 'admin'
+                    ? "bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 text-white shadow-lg shadow-purple-500/20"
+                    : "text-amber-300 hover:text-amber-200 hover:bg-amber-950/40 border border-amber-500/20"
+                }`}
+              >
+                <Crown className="w-4 h-4 text-amber-300 animate-pulse" />
+                <span>بوابة المعلم سامح (AI Hub)</span>
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+              </button>
+            )}
           </div>
 
-          {/* Action buttons (Cart & Mobile Menu/Admin) */}
+          {/* Action buttons (Cart) */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Quick Admin switch on small screens */}
-            <button
-              onClick={() => onViewChange(activeView === 'admin' ? 'store' : 'admin')}
-              className="lg:hidden flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40"
-            >
-              <Crown className="w-3.5 h-3.5" />
-              <span>{activeView === 'admin' ? "المتجر" : "المعلم سامح"}</span>
-            </button>
-
             {/* Shopping Cart Button */}
             <button
               onClick={onOpenCart}
@@ -191,7 +230,7 @@ export function Header({
         </div>
 
         {/* Mobile Navigation bar */}
-        <div className="flex lg:hidden items-center justify-between gap-1 mt-2.5 pt-2 border-t border-slate-800">
+        <div className="flex md:hidden items-center justify-between gap-1 mt-2.5 pt-2 border-t border-slate-800">
           <button
             onClick={() => onViewChange('store')}
             className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-xs font-bold ${
@@ -210,15 +249,17 @@ export function Header({
             <BookOpen className="w-3.5 h-3.5" />
             <span>مجلة العروض</span>
           </button>
-          <button
-            onClick={() => onViewChange('admin')}
-            className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-xs font-bold ${
-              activeView === 'admin' ? "bg-purple-600/30 text-purple-300 border border-purple-500/30" : "text-slate-400"
-            }`}
-          >
-            <Crown className="w-3.5 h-3.5 text-amber-400" />
-            <span>المعلم سامح AI</span>
-          </button>
+          {isAdminAuthenticated && (
+            <button
+              onClick={() => onViewChange('admin')}
+              className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-xs font-bold ${
+                activeView === 'admin' ? "bg-purple-600/30 text-purple-300 border border-purple-500/30" : "text-slate-400"
+              }`}
+            >
+              <Crown className="w-3.5 h-3.5 text-amber-400" />
+              <span>المعلم سامح</span>
+            </button>
+          )}
         </div>
       </div>
     </header>

@@ -22,6 +22,8 @@ import {
 import { SocialMediaPost, ProductItem } from "@/types/boraey";
 import { INITIAL_POSTS } from "@/data/boraeyMockData";
 
+import { downloadElementAsImage } from "@/lib/imageDownloader";
+
 interface FacebookAutoPosterProps {
   products: ProductItem[];
   onOpenStorefront: () => void;
@@ -34,16 +36,21 @@ export function FacebookAutoPoster({ products, onOpenStorefront }: FacebookAutoP
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishSuccess, setPublishSuccess] = useState(false);
   const [isImageDownloaded, setIsImageDownloaded] = useState(false);
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
   const [selectedTone, setSelectedTone] = useState<'energetic' | 'friendly' | 'weekend'>('energetic');
 
   const currentPost = posts[activePostIndex];
 
-  const handleCopyText = () => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(currentPost.content);
+  const handleCopyText = async () => {
+    try {
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(currentPost.content);
+      }
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2500);
+    } catch (e) {
+      console.error("Clipboard error:", e);
     }
-    setIsCopied(true);
-    setTimeout(() => setIsCopied(false), 2500);
   };
 
   const handlePublishNow = () => {
@@ -60,13 +67,47 @@ export function FacebookAutoPoster({ products, onOpenStorefront }: FacebookAutoP
     }, 1800);
   };
 
-  const handleDownloadImage = () => {
+  const handleDownloadImage = async () => {
     setIsImageDownloaded(true);
+    await downloadElementAsImage("facebook-post-graphic", "elboraey-facebook-post.png");
     setTimeout(() => setIsImageDownloaded(false), 2500);
   };
 
-  const handleRegeneratePost = (tone: 'energetic' | 'friendly' | 'weekend') => {
+  const handleRegeneratePost = async (tone: 'energetic' | 'friendly' | 'weekend') => {
     setSelectedTone(tone);
+    setIsAiGenerating(true);
+
+    try {
+      const res = await fetch("/api/ai/facebook", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          products: products.slice(0, 6),
+          tone,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.postContent) {
+        const updatedPost: SocialMediaPost = {
+          ...currentPost,
+          tone,
+          content: data.postContent,
+          status: "ready",
+        };
+
+        setPosts((prev) =>
+          prev.map((p, idx) => (idx === activePostIndex ? updatedPost : p))
+        );
+        setIsAiGenerating(false);
+        return;
+      }
+    } catch (err) {
+      console.warn("AI generation fallback:", err);
+    }
+
+    // Fallback if network spike
+    setIsAiGenerating(false);
     let newContent = "";
     let newTitle = "";
 
@@ -86,7 +127,9 @@ ${prodLines}
 
 تصفحوا مجلة العروض واطلبوا أونلاين بضغطة زر من موقعنا:
 🌐 https://boraey-market.com
-📍 العنوان: زفتى - شارع الجيش - بجوار الوحدة الزراعية.
+📍 فروعنا في زفتى:
+1- فرع شارع الجيش - بجوار الوحدة الزراعية
+2- فرع شارع سعد زغلول - بجوار مكتبة ناهد
 خدمة العملاء والطلبات واتساب: 01023456789`;
     } else if (tone === "friendly") {
       newTitle = "منشور عائلي هادئ: ميزانية بيتك في أمان مع البرعي 💙";
@@ -98,16 +141,18 @@ ${prodLines}
 
 ادخلي شوفي مجلة العروض واطلبي من مكانك:
 🌐 https://boraey-market.com
-📍 زفتى - شارع الجيش - بجوار الوحدة الزراعية`;
+📍 متواجدين لخدمتكم في فرعين:
+1- فرع شارع الجيش - بجوار الوحدة الزراعية
+2- فرع شارع سعد زغلول - بجوار مكتبة ناهد`;
     } else {
       newTitle = "منشور عروض الويك إند السريعة: خميس وجمعة توفير ⚡";
       newContent = `عروض الويك إند ولعت في هايبر البرعي! ⚡
 خروجة التوفير للأسرة كلها في زفتى.. جهزنا لكم أقوى عروض نهاية الأسبوع على السلع الغذائية والمجمدات والمنظفات:
 ${prodLines}
 
-الحقوا العروض قبل نفاد الكميات المتاحة في الفرع:
+الحقوا العروض قبل نفاد الكميات المتاحة في فروعنا:
 🌐 https://boraey-market.com
-📍 زفتى - شارع الجيش - بجوار الوحدة الزراعية`;
+📍 فرع شارع الجيش & فرع شارع سعد زغلول بزفتى`;
     }
 
     const updatedPost: SocialMediaPost = {
@@ -320,7 +365,7 @@ ${prodLines}
               </div>
 
               {/* FB Post Graphic Asset (1080x1080 Styled Card) */}
-              <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-gradient-to-br from-slate-950 via-zinc-900 to-black p-4 text-white shadow-xl mt-3">
+              <div id="facebook-post-graphic" className="relative rounded-2xl overflow-hidden border border-slate-800 bg-gradient-to-br from-slate-950 via-zinc-900 to-black p-4 text-white shadow-xl mt-3">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-800">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full overflow-hidden relative border border-slate-600 bg-black">

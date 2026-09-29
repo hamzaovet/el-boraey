@@ -159,15 +159,39 @@ export const INITIAL_PRODUCTS: ProductItem[] = [
   },
 ];
 
+export const INITIAL_BRANCHES = [
+  {
+    id: "branch-1",
+    name: "فرع شارع الجيش (الرئيسي)",
+    address: "زفتى - شارع الجيش - بجوار الوحدة الزراعية",
+    landmark: "بجوار الوحدة الزراعية",
+    phone: "01023456789",
+    whatsapp: "201023456789",
+    workingHours: "8:00 ص - 3:00 فجراً",
+    isMain: true,
+  },
+  {
+    id: "branch-2",
+    name: "فرع شارع سعد زغلول",
+    address: "زفتى - شارع سعد زغلول - بجوار مكتبة ناهد",
+    landmark: "بجوار مكتبة ناهد",
+    phone: "01098765432",
+    whatsapp: "201098765432",
+    workingHours: "8:00 ص - 2:00 فجراً",
+    isMain: false,
+  },
+];
+
 export const INITIAL_DELIVERY_SETTINGS: DeliverySettings = {
-  isDeliveryEnabled: false, // Defaulting to OFF as requested: "ملحوظة ان موضوع الدليفري ممكن ميكونش جاهز حاليا وبالتالي عاوز امكانية تفعيله وايقافه من الداش بورد"
+  isDeliveryEnabled: false, // Defaulting to OFF as requested
   deliveryFee: 15,
   freeDeliveryThreshold: 400,
   estimatedTimeMinutes: 35,
-  pauseReasonNotice: "⚠️ خدمة التوصيل المنزلي متوقفة حالياً للتجهيزات اللوجستية وتحديث الأسطول — متاح حالياً استلام طلبك فوراً ودون انتظار من فرع هايبر البرعي (شارع الجيش - زفتى).",
+  pauseReasonNotice: "⚠️ خدمة التوصيل المنزلي متوقفة حالياً للتجهيزات وتحديث الأسطول — متاح الاستلام الفوري من فرعي زفتى (شارع الجيش أو شارع سعد زغلول).",
+  branches: INITIAL_BRANCHES,
+  defaultBranchId: "branch-1",
   contactPhone: "01023456789",
   whatsappNumber: "201023456789",
-  branchAddress: "زفتى - شارع الجيش - بجوار الوحدة الزراعية - محافظة الغربية",
 };
 
 export const INITIAL_ORDERS: CustomerOrder[] = [

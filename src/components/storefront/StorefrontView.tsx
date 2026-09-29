@@ -33,6 +33,7 @@ interface StorefrontViewProps {
   onOpenFlyerModal: () => void;
   onOpenCart: () => void;
   onGoToAdmin: () => void;
+  isAdminAuthenticated?: boolean;
 }
 
 const CATEGORIES: { id: ProductCategory; label: string; icon: string }[] = [
@@ -55,6 +56,7 @@ export function StorefrontView({
   onOpenFlyerModal,
   onOpenCart,
   onGoToAdmin,
+  isAdminAuthenticated,
 }: StorefrontViewProps) {
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -201,30 +203,56 @@ export function StorefrontView({
         </div>
       </div>
 
-      {/* Teacher Sameh Admin Teaser Bar */}
-      <div className="bg-gradient-to-r from-purple-950/60 via-slate-900 to-slate-950 border border-purple-500/30 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center shrink-0">
-            <Wand2 className="w-5 h-5 text-purple-400 animate-spin" style={{ animationDuration: '6s' }} />
+      {/* Information Banner */}
+      {isAdminAuthenticated ? (
+        <div className="bg-gradient-to-r from-purple-950/60 via-slate-900 to-slate-950 border border-purple-500/30 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center shrink-0">
+              <Wand2 className="w-5 h-5 text-purple-400 animate-spin" style={{ animationDuration: '6s' }} />
+            </div>
+            <div>
+              <h4 className="text-xs sm:text-sm font-black text-purple-300">
+                أهلاً بالمعلم سامح! أدوات الذكاء الاصطناعي وإدارة المخزون جاهزة لك
+              </h4>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                توليد مجلات العروض من خط الإيد، صياغة منشورات فيسبوك، وإنتاج ريلز فورياً.
+              </p>
+            </div>
           </div>
-          <div>
-            <h4 className="text-xs sm:text-sm font-black text-purple-300">
-              أهلاً بالمعلم سامح! عاوز ترفع ورقة خط الإيد أو تولد مجلة جديدة بالذكاء الاصطناعي؟
-            </h4>
-            <p className="text-[11px] text-slate-400 mt-0.5">
-              صور الورقة بالكشكول والذكاء الاصطناعي هيقرأ الأسعار ويولد مجلة وتصميمات فيسبوك وريلز بضغطة زر واحدة!
-            </p>
-          </div>
-        </div>
 
-        <button
-          onClick={onGoToAdmin}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-amber-600 hover:from-purple-500 hover:to-amber-500 text-white font-black text-xs shadow-md transition-all cursor-pointer self-start sm:self-center shrink-0"
-        >
-          <span>دخول بوابة المعلم سامح</span>
-          <ArrowRight className="w-3.5 h-3.5 rotate-180" />
-        </button>
-      </div>
+          <button
+            onClick={onGoToAdmin}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-amber-600 hover:from-purple-500 hover:to-amber-500 text-white font-black text-xs shadow-md transition-all cursor-pointer self-start sm:self-center shrink-0"
+          >
+            <span>دخول لوحة تحكم المعلم سامح 👑</span>
+            <ArrowRight className="w-3.5 h-3.5 rotate-180" />
+          </button>
+        </div>
+      ) : (
+        <div className="bg-gradient-to-r from-blue-950/40 via-slate-900 to-slate-950 border border-blue-500/20 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center shrink-0">
+              <Store className="w-5 h-5 text-cyan-400" />
+            </div>
+            <div>
+              <h4 className="text-xs sm:text-sm font-black text-cyan-300">
+                سلسلة هايبر ماركت البرعي بخدمتكم في فرعين بمدينة زفتى 🏬
+              </h4>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                الفرع الأول: شارع الجيش (بجوار الوحدة الزراعية) | الفرع الثاني: شارع سعد زغلول (بجوار مكتبة ناهد)
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={onOpenFlyerModal}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/30 text-xs font-bold transition-all cursor-pointer self-start sm:self-center shrink-0"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+            <span>مجلة عروض الأسبوع</span>
+          </button>
+        </div>
+      )}
 
       {/* Filters, Categories and Search */}
       <div className="space-y-3">

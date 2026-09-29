@@ -44,6 +44,9 @@ export function CartDrawer({
   const [deliveryType, setDeliveryType] = useState<OrderDeliveryType>(
     deliverySettings.isDeliveryEnabled ? "delivery" : "pickup"
   );
+  const [pickupBranchId, setPickupBranchId] = useState<string>(
+    deliverySettings.defaultBranchId || (deliverySettings.branches[0]?.id ?? "branch-1")
+  );
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
@@ -57,6 +60,8 @@ export function CartDrawer({
   const deliveryFee = (deliveryType === "delivery" && deliverySettings.isDeliveryEnabled) ? deliverySettings.deliveryFee : 0;
   const grandTotal = subtotal + deliveryFee;
 
+  const selectedBranch = deliverySettings.branches.find(b => b.id === pickupBranchId) || deliverySettings.branches[0];
+
   const handleCheckout = (e: React.FormEvent) => {
     e.preventDefault();
     if (!customerName || !customerPhone) {
@@ -64,7 +69,7 @@ export function CartDrawer({
       return;
     }
 
-    if (deliveryType === "delivery" && !customerAddress) {
+    if (deliveryType === "delivery" && deliverySettings.isDeliveryEnabled && !customerAddress) {
       alert("برجاء إدخال عنوان التوصيل بالتفصيل");
       return;
     }
@@ -75,7 +80,8 @@ export function CartDrawer({
       customerName,
       customerPhone,
       deliveryType: deliverySettings.isDeliveryEnabled ? deliveryType : "pickup",
-      address: deliveryType === "delivery" ? customerAddress : undefined,
+      pickupBranchId: deliveryType === "pickup" || !deliverySettings.isDeliveryEnabled ? pickupBranchId : undefined,
+      address: (deliveryType === "delivery" && deliverySettings.isDeliveryEnabled) ? customerAddress : undefined,
       notes: customerNotes || undefined,
       paymentMethod,
       items: [...cartItems],
@@ -96,18 +102,26 @@ export function CartDrawer({
       .map((it) => `- ${it.product.name} (عدد ${it.quantity}) بسعر ${it.product.offerPrice * it.quantity} ج`)
       .join("%0A");
 
+    const orderBranch = deliverySettings.branches.find(b => b.id === order.pickupBranchId) || deliverySettings.branches[0];
+    const targetPhone = orderBranch?.whatsapp || deliverySettings.whatsappNumber || "201023456789";
+
+    const branchLine = (order.deliveryType === "pickup" && orderBranch)
+      ? `فرع الاستلام: ${orderBranch.name} (${orderBranch.address})%0A`
+      : "";
+
     const message = `طلب جديد من موقع هايبر ماركت البرعي 🛒%0A` +
       `رقم الطلب: ${order.orderNumber}%0A` +
       `الاسم: ${order.customerName}%0A` +
       `الهاتف: ${order.customerPhone}%0A` +
-      `نوع الاستلام: ${order.deliveryType === "delivery" ? "توصيل منزلي" : "استلام من الفرع"}%0A` +
-      (order.address ? `العنوان: ${order.address}%0A` : "") +
+      `نوع الطلب: ${order.deliveryType === "delivery" ? "توصيل منزلي 🛵" : "استلام من الفرع 🏬"}%0A` +
+      branchLine +
+      (order.address ? `عنوان التوصيل: ${order.address}%0A` : "") +
       `طريقة الدفع: ${order.paymentMethod === "cash" ? "كاش" : order.paymentMethod === "instapay" ? "إنستاباي" : "فودافون كاش"}%0A` +
-      `المنتجات:%0A${itemsList}%0A` +
+      `الأصناف المطلوبة:%0A${itemsList}%0A` +
       `إجمالي الطلب: ${order.total} جنيه مصري%0A` +
       `شكراً يا معلم سامح وفي انتظار التجهيز! 💙`;
 
-    return `https://wa.me/${deliverySettings.whatsappNumber}?text=${message}`;
+    return `https://wa.me/${targetPhone}?text=${message}`;
   };
 
   return (
@@ -321,6 +335,34 @@ export function CartDrawer({
                         <Store className="w-4 h-4" />
                         <span>استلام من الفرع (مجاناً)</span>
                       </button>
+                    </div>
+                  )}
+
+                  {/* Branch Selection for Pickup */}
+                  {(deliveryType === "pickup" || !deliverySettings.isDeliveryEnabled) && (
+                    <div className="space-y-2 pt-2">
+                      <label className="text-xs font-bold text-slate-300 block">اختر فرع الاستلام في زفتى:</label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {deliverySettings.branches.map((b) => (
+                          <button
+                            key={b.id}
+                            type="button"
+                            onClick={() => setPickupBranchId(b.id)}
+                            className={`p-3 rounded-2xl border text-right transition-all cursor-pointer ${
+                              pickupBranchId === b.id
+                                ? "bg-cyan-500/20 border-cyan-400 text-white shadow-md shadow-cyan-500/10"
+                                : "bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700"
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-1 mb-1">
+                              <span className="font-black text-xs text-white">{b.name}</span>
+                              {b.isMain && <span className="text-[9px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded font-bold">الرئيسي</span>}
+                            </div>
+                            <p className="text-[10px] text-slate-400 line-clamp-1">{b.address}</p>
+                            <p className="text-[10px] text-emerald-400 font-mono mt-1">📞 {b.phone}</p>
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>

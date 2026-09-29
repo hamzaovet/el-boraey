@@ -20,6 +20,7 @@ import {
   FileCheck
 } from "lucide-react";
 import { OfferFlyer, FlyerTheme, ProductItem } from "@/types/boraey";
+import { downloadElementAsImage } from "@/lib/imageDownloader";
 
 interface FlyerGeneratorStudioProps {
   currentFlyer: OfferFlyer;
@@ -93,8 +94,9 @@ export function FlyerGeneratorStudio({
     setTimeout(() => setIsPublished(false), 3000);
   };
 
-  const handleDownloadPdf = () => {
+  const handleDownloadPdf = async () => {
     setIsDownloaded(true);
+    await downloadElementAsImage("flyer-live-preview", "elboraey-weekly-flyer.png");
     setTimeout(() => setIsDownloaded(false), 3000);
   };
 
@@ -306,7 +308,7 @@ export function FlyerGeneratorStudio({
             </div>
 
             {/* Flyer Simulation Container */}
-            <div className={`rounded-2xl border overflow-hidden shadow-2xl transition-all duration-300 ${previewStyle.bodyBg}`}>
+            <div id="flyer-live-preview" className={`rounded-2xl border overflow-hidden shadow-2xl transition-all duration-300 ${previewStyle.bodyBg}`}>
               
               {/* Flyer Cover Banner */}
               <div className={`p-6 text-center shadow-lg relative overflow-hidden ${previewStyle.headerBg}`}>

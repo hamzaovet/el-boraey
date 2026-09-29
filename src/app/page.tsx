@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Sparkles } from "lucide-react";
 import { 
   ProductItem, 
@@ -21,6 +21,7 @@ import { StorefrontView } from "@/components/storefront/StorefrontView";
 import { CartDrawer } from "@/components/storefront/CartDrawer";
 import { DigitalFlyerModal } from "@/components/storefront/DigitalFlyerModal";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
+import { AdminLoginModal } from "@/components/admin/AdminLoginModal";
 
 export default function BoraeyHomePage() {
   const [boraeyView, setBoraeyView] = useState<'store' | 'flyer' | 'admin'>('store');
@@ -33,9 +34,47 @@ export default function BoraeyHomePage() {
   const [isFlyerModalOpen, setIsFlyerModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Authentication & Branch states
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
+  const [selectedBranchId, setSelectedBranchId] = useState<string>("branch-1");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const isAuth = sessionStorage.getItem("boraey_admin_authenticated") === "true";
+      if (isAuth) {
+        setIsAdminAuthenticated(true);
+      }
+    }
+  }, []);
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  const handleOpenAdminLogin = () => {
+    if (isAdminAuthenticated) {
+      setBoraeyView('admin');
+    } else {
+      setIsAdminLoginOpen(true);
+    }
+  };
+
+  const handleAdminLoginSuccess = () => {
+    setIsAdminAuthenticated(true);
+    setIsAdminLoginOpen(false);
+    setBoraeyView('admin');
+    showToast("👑 مرحباً بك يا معلم سامح في بوابتك الذكية!");
+  };
+
+  const handleAdminLogout = () => {
+    setIsAdminAuthenticated(false);
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("boraey_admin_authenticated");
+    }
+    setBoraeyView('store');
+    showToast("🔒 تم قفل البوابة الإدارية والرجوع للمتجر العام");
   };
 
   const handleAddToCart = (product: ProductItem) => {
@@ -107,6 +146,10 @@ export default function BoraeyHomePage() {
       <Header
         activeView={boraeyView}
         onViewChange={(v) => {
+          if (v === 'admin' && !isAdminAuthenticated) {
+            setIsAdminLoginOpen(true);
+            return;
+          }
           setBoraeyView(v);
           if (v === 'flyer') setIsFlyerModalOpen(true);
         }}
@@ -114,11 +157,15 @@ export default function BoraeyHomePage() {
         cartItems={cartItems}
         onOpenCart={() => setIsCartOpen(true)}
         onToggleDelivery={handleToggleDelivery}
+        selectedBranchId={selectedBranchId}
+        onSelectBranch={setSelectedBranchId}
+        isAdminAuthenticated={isAdminAuthenticated}
+        onOpenAdminLogin={handleOpenAdminLogin}
       />
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 pt-6">
-        {boraeyView === 'admin' ? (
+        {boraeyView === 'admin' && isAdminAuthenticated ? (
           <AdminDashboard
             deliverySettings={deliverySettings}
             onUpdateDeliverySettings={setDeliverySettings}
@@ -133,6 +180,7 @@ export default function BoraeyHomePage() {
               );
             }}
             onOpenStorefront={() => setBoraeyView('store')}
+            onLogout={handleAdminLogout}
           />
         ) : (
           <StorefrontView
@@ -144,7 +192,8 @@ export default function BoraeyHomePage() {
             onUpdateCartQuantity={handleUpdateCartQuantity}
             onOpenFlyerModal={() => setIsFlyerModalOpen(true)}
             onOpenCart={() => setIsCartOpen(true)}
-            onGoToAdmin={() => setBoraeyView('admin')}
+            onGoToAdmin={handleOpenAdminLogin}
+            isAdminAuthenticated={isAdminAuthenticated}
           />
         )}
       </main>
@@ -157,11 +206,25 @@ export default function BoraeyHomePage() {
             <span className="text-slate-600">|</span>
             <span className="text-cyan-400 font-bold">الأسعار قطاعي بسعر جملة الجملة 💙💙</span>
             <span className="text-slate-600">|</span>
-            <span>زفتى - شارع الجيش - بجوار الوحدة الزراعية</span>
+            <span>فرع شارع الجيش وفرع شارع سعد زغلول - زفتى</span>
           </div>
 
           <div className="flex items-center gap-4 text-slate-500 text-[11px]">
-            <span>بوابة المعلم سامح للذكاء الاصطناعي والتجارة الإلكترونية</span>
+            {isAdminAuthenticated ? (
+              <button
+                onClick={handleAdminLogout}
+                className="hover:text-rose-400 transition-colors cursor-pointer"
+              >
+                قفل البوابة الإدارية 🔒
+              </button>
+            ) : (
+              <button
+                onClick={handleOpenAdminLogin}
+                className="hover:text-amber-400 transition-colors cursor-pointer"
+              >
+                دخول إدارة المعلم سامح 👑
+              </button>
+            )}
           </div>
         </div>
       </footer>
@@ -187,6 +250,13 @@ export default function BoraeyHomePage() {
         }}
         flyer={flyer}
         onAddToCart={handleAddToCart}
+      />
+
+      {/* Teacher Sameh Admin PIN Login Modal */}
+      <AdminLoginModal
+        isOpen={isAdminLoginOpen}
+        onClose={() => setIsAdminLoginOpen(false)}
+        onSuccess={handleAdminLoginSuccess}
       />
     </div>
   );

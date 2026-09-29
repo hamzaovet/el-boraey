@@ -20,6 +20,7 @@ export interface ProductItem {
   inStock: boolean;
   isHotOffer?: boolean;
   description?: string;
+  branchIds?: string[]; // الفروع المتوفر بها المنتج
 }
 
 export type FlyerTheme = 'metallic' | 'dynamite' | 'fresh' | 'festive';
@@ -36,15 +37,27 @@ export interface OfferFlyer {
   footerNote: string;
 }
 
+export interface BranchInfo {
+  id: string;
+  name: string;
+  address: string;
+  landmark: string;
+  phone: string;
+  whatsapp: string;
+  workingHours: string;
+  isMain: boolean;
+}
+
 export interface DeliverySettings {
   isDeliveryEnabled: boolean;
   deliveryFee: number;
   freeDeliveryThreshold: number;
   estimatedTimeMinutes: number;
   pauseReasonNotice: string;
-  contactPhone: string;
-  whatsappNumber: string;
-  branchAddress: string;
+  branches: BranchInfo[];
+  defaultBranchId: string;
+  contactPhone?: string;
+  whatsappNumber?: string;
 }
 
 export type OrderDeliveryType = 'delivery' | 'pickup';
@@ -62,6 +75,7 @@ export interface CustomerOrder {
   customerName: string;
   customerPhone: string;
   deliveryType: OrderDeliveryType;
+  pickupBranchId?: string;
   address?: string;
   notes?: string;
   paymentMethod: PaymentMethod;

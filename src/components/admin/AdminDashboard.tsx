@@ -30,6 +30,8 @@ import { FlyerGeneratorStudio } from "./FlyerGeneratorStudio";
 import { FacebookAutoPoster } from "./FacebookAutoPoster";
 import { ReelsStudio } from "./ReelsStudio";
 import { OrdersManager } from "./OrdersManager";
+import { ProductManagerStudio } from "./ProductManagerStudio";
+import { LogOut, Boxes } from "lucide-react";
 
 interface AdminDashboardProps {
   deliverySettings: DeliverySettings;
@@ -41,6 +43,7 @@ interface AdminDashboardProps {
   orders: CustomerOrder[];
   onUpdateOrderStatus: (orderId: string, newStatus: OrderStatus) => void;
   onOpenStorefront: () => void;
+  onLogout?: () => void;
 }
 
 export function AdminDashboard({
@@ -53,8 +56,9 @@ export function AdminDashboard({
   orders,
   onUpdateOrderStatus,
   onOpenStorefront,
+  onLogout,
 }: AdminDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'ocr' | 'flyer' | 'facebook' | 'reels' | 'orders' | 'settings'>('ocr');
+  const [activeTab, setActiveTab] = useState<'ocr' | 'flyer' | 'facebook' | 'reels' | 'orders' | 'products'>('ocr');
   const [toggleNotice, setToggleNotice] = useState<string | null>(null);
 
   const handleToggleDelivery = () => {
@@ -118,31 +122,58 @@ export function AdminDashboard({
             </div>
           </div>
 
-          {/* Quick Delivery Switcher Bar */}
-          <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-700 shadow-xl flex items-center justify-between sm:justify-start gap-4">
-            <div className="text-right">
-              <span className="text-xs font-black text-white block">
-                حالة خدمة التوصيل للمنازل (Delivery):
-              </span>
-              <span className={`text-[11px] font-bold ${deliverySettings.isDeliveryEnabled ? "text-emerald-400" : "text-amber-400"}`}>
-                {deliverySettings.isDeliveryEnabled ? "مفعلة وتستقبل طلبات التوصيل 🛵" : "متوقفة (استلام بالفرع فقط) 🏬"}
-              </span>
+          {/* Quick Actions & Delivery Switcher Bar */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            {/* Delivery Switcher Bar */}
+            <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-700 shadow-xl flex items-center justify-between gap-4">
+              <div className="text-right">
+                <span className="text-xs font-black text-white block">
+                  حالة خدمة التوصيل للمنازل (Delivery):
+                </span>
+                <span className={`text-[11px] font-bold ${deliverySettings.isDeliveryEnabled ? "text-emerald-400" : "text-amber-400"}`}>
+                  {deliverySettings.isDeliveryEnabled ? "مفعلة وتستقبل طلبات التوصيل 🛵" : "متوقفة (استلام بالفرع فقط) 🏬"}
+                </span>
+              </div>
+
+              {/* Toggle Button */}
+              <button
+                onClick={handleToggleDelivery}
+                className={`relative inline-flex h-8 w-16 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
+                  deliverySettings.isDeliveryEnabled ? "bg-emerald-600" : "bg-slate-700"
+                }`}
+                title="اضغط لتشغيل أو إيقاف الدليفري"
+              >
+                <span
+                  className={`pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                    deliverySettings.isDeliveryEnabled ? "translate-x-0" : "-translate-x-8"
+                  }`}
+                />
+              </button>
             </div>
 
-            {/* Toggle Button */}
-            <button
-              onClick={handleToggleDelivery}
-              className={`relative inline-flex h-8 w-16 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
-                deliverySettings.isDeliveryEnabled ? "bg-emerald-600" : "bg-slate-700"
-              }`}
-              title="اضغط لتشغيل أو إيقاف الدليفري"
-            >
-              <span
-                className={`pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
-                  deliverySettings.isDeliveryEnabled ? "translate-x-0" : "-translate-x-8"
-                }`}
-              />
-            </button>
+            {/* Quick Links / Logout */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={onOpenStorefront}
+                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white text-xs font-bold transition-all cursor-pointer shadow-md"
+              >
+                <Store className="w-4 h-4 text-cyan-400" />
+                <span>المتجر العام</span>
+              </button>
+
+              {onLogout && (
+                <button
+                  type="button"
+                  onClick={onLogout}
+                  className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-2xl bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/50 text-rose-300 text-xs font-bold transition-all cursor-pointer shadow-md"
+                  title="قفل البوابة الإدارية والخروج"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>قفل البوابة</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -233,6 +264,18 @@ export function AdminDashboard({
           <Package className="w-4 h-4 text-emerald-300" />
           <span>5. إدارة ومتابعة الطلبات ({orders.length})</span>
         </button>
+
+        <button
+          onClick={() => setActiveTab('products')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap border ${
+            activeTab === 'products'
+              ? "bg-amber-600 text-white border-amber-500 shadow-lg shadow-amber-600/20"
+              : "bg-slate-900 text-slate-400 border-slate-800 hover:text-white"
+          }`}
+        >
+          <Boxes className="w-4 h-4 text-amber-300" />
+          <span>6. إدارة الأصناف والمخزون ({products.length})</span>
+        </button>
       </div>
 
       {/* Render Active Sub-View */}
@@ -268,6 +311,20 @@ export function AdminDashboard({
         <OrdersManager
           orders={orders}
           onUpdateOrderStatus={onUpdateOrderStatus}
+        />
+      )}
+
+      {activeTab === 'products' && (
+        <ProductManagerStudio
+          products={products}
+          branches={deliverySettings.branches}
+          onUpdateProducts={onUpdateProducts}
+          onAddToFlyer={(newProduct) => {
+            onUpdateFlyer({
+              ...flyer,
+              products: [newProduct, ...flyer.products],
+            });
+          }}
         />
       )}
     </div>
